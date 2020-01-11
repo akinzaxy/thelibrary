@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>The Library</title>
+    <meta for="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../webdev resource/bootstrapClass/bootstrap/dist/css/bootstrap.css" />
+    <style>
+        @keyframes warnflash {
+            from {color: red !important;}
+            to {color: blue !important;}
+        }
+        @-moz-keyframes warnflash {
+            from {color: red !important;}
+            to {color: blue !important;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col header bg-info text-light text-center rounded">
+                <h1 class="font-weight-bold">THE LIBRARY</h1>
+                <p class="small font-italic">...Knowledge is power</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col py-3">
+                <form class="card border-info p-2">
+                    <div class="row">
+                        <div class="col">
+                            <label class="text-info font-weight-bold pl-2 mb-1" for="inputName">Book Name:</label>
+                            <input type="text" name="inputName" id="inputName" class="form-control mx-auto" value="">
+                        </div>
+                        <div class="col">
+                            <label class="text-info font-weight-bold pl-2 mb-1" for="inputAuthor">Book Author:</label>
+                            <input type="text" name="inputAuthor" id="inputAuthor" class="form-control mx-auto" value="">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <label class="text-info font-weight-bold pl-2 mb-1" for="inputPages">Number of Pages:</label>
+                            <input type="number" name="inputPages" id="inputPages" class="form-control mx-auto" value="">
+                        </div>
+                        <div class="col">
+                            <label class="text-info font-weight-bold pl-2 mb-1" for="inputYear">Year of Publishing:</label>
+                            <input type="number" name="inputYear" id="inputYear" class="form-control mx-auto" value="">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <input type="button" class="btn btn-block px-1 btn-success font-weight-bold" value="Load Database" onclick="loadLocal()">
+                        </div>
+                        <div class="col">
+                            <input type="button" class="btn btn-block px-1 btn-info font-weight-bold" value="Donate Book" onclick="addbookLocal()">
+                        </div>
+                        <div class="col">
+                            <input type="button" class="btn btn-block px-1 btn-info font-weight-bold" value="Log Books" onclick="logBooks()">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-12 py-2">
+                <div class="card border-info p-2">
+                    <h5 class="text-light bg-info p-2 font-weight-bold">Books Received:</h5>
+                    <div id="bookPlace"><p class="p-2" id="warnText">No Books Yet &#9785;</p></div>
+                    <!-- <p id="warnerBro">Warner Brothers</p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var bookName = document.getElementById("inputName");
+        var bookAuthor = document.getElementById("inputAuthor");
+        var bookPages = document.getElementById("inputPages");
+        var bookYear = document.getElementById("inputYear");
+        function bookConst(bN, bA, bP, bY) {
+            this.Book_Name = bN;
+            this.Book_Author = bA;
+            this.Book_Page_No = bP;
+            this.Book_Year = bY
+        };
+        // defining two variables 
+        // bookStore: array status depends on ifCheck block; 
+        // bookArr: an array to keep tabs, used in if checks
+        var bookStore, bookArr = [];
+        function addbookLocal() {
+            bookArr.push(new bookConst(bookName.value, bookAuthor.value, bookPages.value, bookYear.value));
+            // console.log(bookArr);
+            ifCheck: if (!(bookArr.length > 1)) {
+                if (JSON.parse(localStorage.getItem("bookLocal3")) instanceof Array) {
+                    console.log("bookLocal3 Arrary found");
+                    bookStore = JSON.parse(localStorage.getItem("bookLocal3"));
+                    console.log("bookStore value updated from localStorage");
+                    break ifCheck;
+                    }
+                bookStore = [];
+                console.log("bookStore set as fresh Array");
+            };
+            // now the counter-ifCheck
+            if (bookArr.length > 1) {
+            bookStore = JSON.parse(localStorage.getItem("bookLocal3"));
+            console.log("bookStore value updated from localStorage");
+            };
+            bookStore.push(new bookConst(bookName.value, bookAuthor.value, bookPages.value, bookYear.value));
+            console.log(bookStore);
+            localStorage.setItem("bookLocal3", JSON.stringify(bookStore));
+            // console.log(JSON.parse(localStorage.getItem("bookList")));
+        }
+        //here book logging function, uses updated value of bookStore from previous function
+        function logBooks() {
+            var booksHere = "";
+            booksHere += '<table class="table table-info table-striped">\
+                            <tr><th>S/N</th><th>Book</th><th>Author</th><th>No. of Pages</th><th>Year Published</th></tr>';
+            for (var e = 0; e < bookStore.length; e++) {
+                var ee = e + 1;
+                booksHere += '<tr class="p-2"><td>' + ee + '</td>';
+                for (var z in bookStore[e]) {
+                    var bookRow = "<td>" + bookStore[e][z] + "</td>";
+                    booksHere += bookRow;
+                }
+                booksHere += "</tr>";
+            }
+            booksHere += "</table>";
+            document.getElementById("bookPlace").innerHTML = booksHere;
+        }
+        // function to update booksHere array from localStorage, 
+        // incase of unactivated addbookLocal function
+        function loadLocal() {
+            if (JSON.parse(localStorage.getItem("bookLocal3")) instanceof Array) {
+                    console.log("bookLocal3 Arrary found");
+                    bookStore = JSON.parse(localStorage.getItem("bookLocal3"));
+                    console.log("bookStore value updated from localStorage");
+                    }
+            else {document.getElementById("warnText").style.animation = 
+            "warnflash 3s 5"};
+        }
+        // animaBtn unsued function
+        function animaBtn() {
+            console.log("weAnimate sir!");
+            // document.getElementById("warnerBro").style.animation = "hidden";
+            // document.getElementById("warnerBro").style.color = "blue";
+            document.getElementById("warnerBro").style.animation = "warnflash 3s 5";
+        }
+    </script>
+</body>
+</html>
